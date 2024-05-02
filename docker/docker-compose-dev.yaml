@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  spectre_explorer:
+    container_name: spectre_explorer
+    image: spectrenetwork/spectre-explorer:latest
+    restart: unless-stopped
+    environment:
+      API_URI: "http://localhost:8000"
+      API_WS_URI: "ws://localhost:8000"
+    ports:
+      - "8080:8080/tcp"
+
+  spectre_rest_server:
+    container_name: spectre_rest_server
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
+    restart: unless-stopped
+    command: pipenv run uvicorn main:app --reload --host 0.0.0.0 --port 8000 
+    volumes:
+      - "../:/app"
+    environment:
+      SPECTRED_HOST_1: spectred:18110
+      SQL_URI: postgresql+asyncpg://postgres:postgres@postgresql:5432/postgres
+    ports:
+      - "8000:8000/tcp"
+    links:
+      - spectred
+      - postgresql
+
+  spectre_db_filler:
+    container_name: spectre_db_filler
+    image: spectrenetwork/spectre-db-filler:latest
+    restart: unless-stopped
+    environment:
+      DEBUG: "true"
+      SPECTRED_HOST_1: spectred:18110
+      SQL_URI: postgresql://postgres:postgres@postgresql:5432/postgres
+    links:
+      - spectred
+      - postgresql
+
+  postgresql:
+    container_name: postgresql
+    image: postgres:14-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432/tcp"
+    volumes:
+      - postgresql:/var/lib/postgresql/data/
+
+  spectred:
+    container_name: spectred
+    image: spectrenetwork/spectred:latest
+    restart: unless-stopped
+    ports:
+      - "18110:18110/tcp"
+      - "18111:18111/tcp"
+    volumes:
+      - spectred:/app/data/
+    command: spectred --utxoindex --connect=mainnet-dnsseed-1.spectre-network.org
+
+volumes:
+  postgresql:
+  spectred:
