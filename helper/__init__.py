@@ -28,7 +28,9 @@ async def get_spr_market_data():
                 if resp.status == 200:
                     FLOOD_DETECTED = False
                     data = await resp.json()
-                    CACHE = data["quotes"]["USD"]
+                    market_data = data["quotes"]["USD"]
+                    market_data["rank"] = data["rank"]  # Add rank to the market data
+                    CACHE = market_data
                     return CACHE
                 elif resp.status == 429:
                     FLOOD_DETECTED = time.time()
