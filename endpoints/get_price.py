@@ -8,10 +8,10 @@ from server import app
 
 
 class PriceResponse(BaseModel):
-    price: float = 0.025235
+    price: float
 
 
-@app.get("/info/price", response_model=PriceResponse | str, tags=["Spectre network info"])
+@app.get("/info/price", response_model=PriceResponse, tags=["Spectre network info"])
 async def get_price(stringOnly: bool = False):
     """
     Returns the current price for Spectre in USD.

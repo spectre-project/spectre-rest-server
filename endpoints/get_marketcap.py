@@ -7,13 +7,13 @@ from server import app, spectred_client
 
 
 class MarketCapResponse(BaseModel):
-    marketcap: int = 12000132
+    marketcap: int
 
 
-@app.get("/info/marketcap", response_model=MarketCapResponse | str, tags=["Spectre network info"])
+@app.get("/info/marketcap", response_model=MarketCapResponse, tags=["Spectre network info"])
 async def get_marketcap(stringOnly: bool = False):
     """
-    Get $SPR price and market cap. Price info is from coingecko.com
+    Get $SPR price and market cap. Price info is from coinpaprika.com
     """
     spr_price = await get_spr_price()
     resp = await spectred_client.request("getCoinSupplyRequest")
