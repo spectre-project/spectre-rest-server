@@ -20,12 +20,8 @@ app = FastAPI(
     title="Spectre REST-API server",
     description="This server is to communicate with Spectre Network via REST-API",
     version=os.getenv("VERSION", "tbd"),
-    contact={
-        "name": "Spectre Network"
-    },
-    license_info={
-        "name": "MIT LICENSE"
-    }
+    contact={"name": "Spectre Network"},
+    license_info={"name": "MIT LICENSE"},
 )
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
@@ -48,9 +44,7 @@ class PingResponse(BaseModel):
     isSynced: bool = True
 
 
-@app.get("/ping",
-         include_in_schema=False,
-         response_model=PingResponse)
+@app.get("/ping", include_in_schema=False, response_model=PingResponse)
 async def ping_server():
     """
     Ping Pong
@@ -62,9 +56,9 @@ async def ping_server():
         return {
             "server_version": info["getInfoResponse"]["serverVersion"],
             "is_utxo_indexed": info["getInfoResponse"]["isUtxoIndexed"],
-            "is_synced": info["getInfoResponse"]["isSynced"]
+            "is_synced": info["getInfoResponse"]["isSynced"],
         }
-    except Exception as exc:
+    except Exception:
         raise HTTPException(status_code=500, detail="Spectred not connected.")
 
 
@@ -77,7 +71,7 @@ for i in range(100):
         break
 
 if not spectred_hosts:
-    raise Exception('Please set at least SPECTRED_HOST_1 environment variable.')
+    raise Exception("Please set at least SPECTRED_HOST_1 environment variable.")
 
 spectred_client = SpectredMultiClient(spectred_hosts)
 
@@ -87,9 +81,10 @@ async def unicorn_exception_handler(request: Request, exc: Exception):
     await spectred_client.initialize_all()
     return JSONResponse(
         status_code=500,
-        content={"message": "Internal server error"
-                 # "traceback": f"{traceback.format_exception(exc)}"
-                 },
+        content={
+            "message": "Internal server error"
+            # "traceback": f"{traceback.format_exception(exc)}"
+        },
     )
 
 

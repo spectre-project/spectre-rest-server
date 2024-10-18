@@ -10,19 +10,23 @@ class MarketCapResponse(BaseModel):
     marketcap: int = 12000132
 
 
-@app.get("/info/marketcap", response_model=MarketCapResponse | str, tags=["Spectre network info"])
+@app.get(
+    "/info/marketcap",
+    response_model=MarketCapResponse | str,
+    tags=["Spectre network info"],
+)
 async def get_marketcap(stringOnly: bool = False):
     """
     Get $SPR price and market cap. Price info is from coingecko.com
     """
     spr_price = await get_spr_price()
     resp = await spectred_client.request("getCoinSupplyRequest")
-    mcap = round(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 100000000 * spr_price)
+    mcap = round(
+        float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 100000000 * spr_price
+    )
 
     if not stringOnly:
-        return {
-            "marketcap": mcap
-        }
+        return {"marketcap": mcap}
     else:
         if mcap < 1000000000:
             return f"{round(mcap / 1000000, 1)}M"

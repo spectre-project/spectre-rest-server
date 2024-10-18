@@ -7,15 +7,17 @@ from models.Variable import KeyValueModel
 
 async def get(key):
     async with async_session() as s:
-        result = await s.execute(select(KeyValueModel.value).where(KeyValueModel.key == key))
+        result = await s.execute(
+            select(KeyValueModel.value).where(KeyValueModel.key == key)
+        )
         return result.scalar()
 
 
 async def set(key, value):
     async with async_session() as s:
-        result = await s.execute(update(KeyValueModel)
-                                 .where(KeyValueModel.key == key)
-                                 .values(value=value))
+        result = await s.execute(
+            update(KeyValueModel).where(KeyValueModel.key == key).values(value=value)
+        )
 
         if result.rowcount == 1:
             await s.commit()
