@@ -16,5 +16,5 @@ jobs:
 
       - name: Run Ruff
         run: |
-          ruff check --output-format=github --exclude "spectred/rpc_pb2.py,spectred/rpc_pb2_grpc.py" .
-          ruff format . --check --exclude "spectred/rpc_pb2.py,spectred/rpc_pb2_grpc.py"
+          ruff check . --output-format=github --exclude "spectred/*pb2.py,spectred/*grpc.py"
+          ruff format . --check --exclude "spectred/*pb2.py,spectred/*grpc.py"
