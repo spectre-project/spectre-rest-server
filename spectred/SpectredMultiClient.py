@@ -2,6 +2,7 @@
 import asyncio
 
 from spectred.SpectredClient import SpectredClient
+
 # pipenv run python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/rpc.proto ./protos/messages.proto ./protos/p2p.proto
 from spectred.SpectredThread import SpectredCommunicationError
 

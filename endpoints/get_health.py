@@ -34,9 +34,13 @@ async def health_state():
     spectreds = []
 
     async with async_session() as s:
-        last_block_time = (await s.execute(select(Transaction.block_time)
-                                           .limit(1)
-                                           .order_by(Transaction.block_time.desc()))).scalar()
+        last_block_time = (
+            await s.execute(
+                select(Transaction.block_time)
+                .limit(1)
+                .order_by(Transaction.block_time.desc())
+            )
+        ).scalar()
 
     time_diff = datetime.now() - datetime.fromtimestamp(last_block_time / 1000)
 
@@ -44,14 +48,14 @@ async def health_state():
         raise HTTPException(status_code=500, detail="Transactions not up to date")
 
     for i, spectred_info in enumerate(spectred_client.spectreds):
-        spectreds.append({
-            "isSynced": spectred_info.is_synced,
-            "isUtxoIndexed": spectred_info.is_utxo_indexed,
-            "p2pId": hashlib.sha256(spectred_info.p2p_id.encode()).hexdigest(),
-            "spectredHost": f"SPECTRED_HOST_{i + 1}",
-            "serverVersion": spectred_info.server_version
-        })
+        spectreds.append(
+            {
+                "isSynced": spectred_info.is_synced,
+                "isUtxoIndexed": spectred_info.is_utxo_indexed,
+                "p2pId": hashlib.sha256(spectred_info.p2p_id.encode()).hexdigest(),
+                "spectredHost": f"SPECTRED_HOST_{i + 1}",
+                "serverVersion": spectred_info.server_version,
+            }
+        )
 
-    return {
-        "spectredServers": spectreds
-    }
+    return {"spectredServers": spectreds}

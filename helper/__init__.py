@@ -26,7 +26,9 @@ async def get_spr_market_data():
     if not FLOOD_DETECTED or time.time() - FLOOD_DETECTED > 300:
         _logger.debug("Querying CoinGecko now.")
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.coingecko.com/api/v3/coins/spectre-network", timeout=10) as resp:
+            async with session.get(
+                "https://api.coingecko.com/api/v3/coins/spectre-network", timeout=10
+            ) as resp:
                 if resp.status == 200:
                     FLOOD_DETECTED = False
                     CACHE = (await resp.json())["market_data"]
@@ -34,9 +36,11 @@ async def get_spr_market_data():
                 elif resp.status == 429:
                     FLOOD_DETECTED = time.time()
                     if CACHE:
-                        _logger.warning('Using cached value. 429 detected.')
+                        _logger.warning("Using cached value. 429 detected.")
                     _logger.warning("Rate limit exceeded.")
                 else:
-                    _logger.error(f"Did not retrieve the market data. Status code {resp.status}")
+                    _logger.error(
+                        f"Did not retrieve the market data. Status code {resp.status}"
+                    )
 
     return CACHE
