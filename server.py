@@ -18,10 +18,10 @@ fastapi.logger.logger.setLevel(logging.WARNING)
 
 app = FastAPI(
     title="Spectre REST-API server",
-    description="This server is to communicate with spectre network via REST-API",
+    description="This server is to communicate with Spectre Network via REST-API",
     version=os.getenv("VERSION", "tbd"),
     contact={
-        "name": "lAmeR1"
+        "name": "Spectre Network"
     },
     license_info={
         "name": "MIT LICENSE"
