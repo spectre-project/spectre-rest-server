@@ -1,4 +1,5 @@
 # encoding: utf-8
+import os
 from enum import Enum
 from typing import List
 
@@ -18,6 +19,7 @@ DESC_RESOLVE_PARAM = (
     " Light fetches only the address and amount. Full fetches the whole TransactionOutput and "
     "adds it into each TxInput."
 )
+SPECTRE_ADDRESS_PREFIX = os.getenv("ADDRESS_PREFIX", "spectre")
 
 
 class TransactionsReceivedAndSpent(BaseModel):
@@ -51,8 +53,9 @@ class PreviousOutpointLookupMode(str, Enum):
 async def get_transactions_for_address(
     spectreAddress: str = Path(
         description="Spectre address as string e.g. "
-        "spectre:pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex="^spectre\:[a-z0-9]{61,63}$",
+        + SPECTRE_ADDRESS_PREFIX
+        + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
+        regex="^" + SPECTRE_ADDRESS_PREFIX + "\:[a-z0-9]{61,63}$",
     ),
 ):
     """
@@ -99,8 +102,9 @@ async def get_transactions_for_address(
 async def get_full_transactions_for_address(
     spectreAddress: str = Path(
         description="Spectre address as string e.g. "
-        "spectre:pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex="^spectre\:[a-z0-9]{61,63}$",
+        + SPECTRE_ADDRESS_PREFIX
+        + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
+        regex="^" + SPECTRE_ADDRESS_PREFIX + "\:[a-z0-9]{61,63}$",
     ),
     limit: int = Query(
         description="The number of records to get", ge=1, le=500, default=50
@@ -145,8 +149,9 @@ async def get_full_transactions_for_address(
 async def get_transaction_count_for_address(
     spectreAddress: str = Path(
         description="Spectre address as string e.g. "
-        "spectre:pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex="^spectre\:[a-z0-9]{61,63}$",
+        + SPECTRE_ADDRESS_PREFIX
+        + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
+        regex="^" + SPECTRE_ADDRESS_PREFIX + "\:[a-z0-9]{61,63}$",
     ),
 ):
     """

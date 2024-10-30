@@ -1,14 +1,18 @@
 # encoding: utf-8
+import os
 
 from fastapi import Path, HTTPException
 from pydantic import BaseModel
 
 from server import app, spectred_client
 
+SPECTRE_ADDRESS_PREFIX = os.getenv("ADDRESS_PREFIX", "spectre")
+
 
 class BalanceResponse(BaseModel):
     address: str = (
-        "spectre:pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00"
+        SPECTRE_ADDRESS_PREFIX
+        + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00"
     )
     balance: int = 38240000000
 
@@ -20,8 +24,10 @@ class BalanceResponse(BaseModel):
 )
 async def get_balance_from_spectre_address(
     spectreAddress: str = Path(
-        description="Spectre address as string e.g. spectre:pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex="^spectre\:[a-z0-9]{61,63}$",
+        description="Spectre address as string e.g. "
+        + SPECTRE_ADDRESS_PREFIX
+        + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
+        regex="^" + SPECTRE_ADDRESS_PREFIX + "\:[a-z0-9]{61,63}$",
     ),
 ):
     """
