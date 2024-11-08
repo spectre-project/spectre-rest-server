@@ -46,7 +46,7 @@ class UtxoResponse(BaseModel):
 )
 async def get_utxos_for_address(
     spectreAddress: str = Path(
-        description=f"Spectre address as string e.g. "
+        description="Spectre address as string e.g. "
         + SPECTRE_ADDRESS_PREFIX
         + ":qqkqkzjvr7zwxxmjxjkmxxdwju9kjs6e9u82uh59z07vgaks6gg62v8707g73",
         regex="^" + SPECTRE_ADDRESS_PREFIX + "\:[a-z0-9]{61,63}$",
