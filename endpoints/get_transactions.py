@@ -94,7 +94,13 @@ async def get_transaction(
     ),
 ):
     """
-    Get block information for a given block id
+    Retrieves transaction details for a given transaction ID from the database.
+
+    Optionally includes `inputs` and `outputs`. Use `resolve_previous_outpoints` to
+    enrich each input with information from the referenced previous outpoint. Modes:
+    - `no`: No outpoint resolution.
+    - `light`: Only address and amount.
+    - `full`: Full outpoint data.
     """
     async with async_session() as s:
         tx = await s.execute(
@@ -202,7 +208,14 @@ async def search_for_transactions(
     ),
 ):
     """
-    Get block information for a given block id
+    Searches for transactions by a list of transaction IDs with optional field filtering.
+    Limits ID list size to 1000; reduces to 50 for light/full previous outpoint resolution.
+    `fields` parameter filters returned fields to optimize query load.
+
+    Modes for `resolve_previous_outpoints`:
+    - `no`: No outpoint data.
+    - `light`: Adds address and amount from referenced outpoints.
+    - `full`: Includes full outpoint data.
     """
     if len(txSearch.transactionIds) > 1000:
         raise HTTPException(422, "Too many transaction ids")

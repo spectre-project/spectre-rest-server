@@ -84,7 +84,8 @@ class BlockResponse(BaseModel):
 @app.get("/blocks/{blockId}", response_model=BlockModel, tags=["Spectre blocks"])
 async def get_block(response: Response, blockId: str = Path(regex="[a-f0-9]{64}")):
     """
-    Get block information for a given block id
+    Retrieves detailed block data for a specified block hash (blockId) from the Spectre blockDAG.
+    Fetches the block details from the Spectred node or, if unavailable, from the local database as a fallback.
     """
     resp = await spectred_client.request(
         "getBlockRequest", params={"hash": blockId, "includeTransactions": True}
@@ -141,7 +142,7 @@ async def get_blocks(
 ):
     """
     Lists block beginning from a low hash (block id). Note that this function tries to determine the blocks from
-    the spectred node. If this is not possible, the database is getting queryied as backup. In this case the response
+    the Spectred node. If this is not possible, the database is getting queryied as backup. In this case the response
     header contains the key value pair: x-data-source: database.
 
     Additionally the fields in verboseData: isChainBlock, childrenHashes and transactionIds can't be filled.
@@ -167,8 +168,7 @@ async def get_blocks_from_bluescore(
     response: Response, blueScore: int = 43679173, includeTransactions: bool = False
 ):
     """
-    Lists block beginning from a low hash (block id). Note that this function is running on a spectred and not returning
-    data from database.
+    Lists blocks beginning from a specified blue score within the Spectre blockDAG.
     """
     response.headers["X-Data-Source"] = "Database"
 

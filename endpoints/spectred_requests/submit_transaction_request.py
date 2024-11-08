@@ -60,7 +60,19 @@ class SubmitTransactionResponse(BaseModel):
 )
 async def submit_a_new_transaction(body: SubmitTransactionRequest):
     """
-    Forwards the body directly to spectred with the command submitTransactionRequest
+    Submits a new transaction to the Spectre network.
+
+    This endpoint forwards the provided transaction data to the Spectre daemon (`spectred`)
+    using the `submitTransactionRequest` command. If successful, it returns the transaction ID.
+
+    **Parameters:**
+    - `body`: JSON object containing:
+      - `transaction`: Transaction details, including version, inputs, outputs, lockTime, and subnetworkId.
+      - `allowOrphan` (optional): Boolean indicating if orphan transactions are allowed.
+
+    **Response:**
+    - `transactionId`: Returns the transaction ID on success.
+    - `error`: Returns an error message if the submission fails.
     """
     tx_resp = await spectred_client.request(
         "submitTransactionRequest", params=body.dict()

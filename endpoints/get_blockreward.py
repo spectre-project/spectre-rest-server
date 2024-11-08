@@ -7,7 +7,7 @@ from server import app, spectred_client
 
 
 class BlockRewardResponse(BaseModel):
-    blockreward: float = 12000132
+    blockreward: float = 15
 
 
 @app.get(
@@ -17,7 +17,7 @@ class BlockRewardResponse(BaseModel):
 )
 async def get_blockreward(stringOnly: bool = False):
     """
-    Returns the current blockreward in SPR/block
+    Returns the current blockreward in SPR/block.
     """
     resp = await spectred_client.request("getBlockDagInfoRequest")
     daa_score = int(resp["getBlockDagInfoResponse"]["virtualDaaScore"])

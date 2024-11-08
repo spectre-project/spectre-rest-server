@@ -39,7 +39,7 @@ app.add_middleware(
 
 
 class PingResponse(BaseModel):
-    serverVersion: str = "0.12.2"
+    serverVersion: str = "0.3.14"
     isUtxoIndexed: bool = True
     isSynced: bool = True
 

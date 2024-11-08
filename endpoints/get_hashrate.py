@@ -42,7 +42,7 @@ async def get_hashrate(stringOnly: bool = False):
 
     resp = await spectred_client.request("getBlockDagInfoRequest")
     hashrate = resp["getBlockDagInfoResponse"]["difficulty"] * 2
-    hashrate_in_th = hashrate / 1_000_000_000_000
+    hashrate_in_th = hashrate / 1e12
 
     if not stringOnly:
         return {"hashrate": hashrate_in_th}
@@ -59,7 +59,8 @@ async def get_hashrate(stringOnly: bool = False):
 @sql_db_only
 async def get_max_hashrate():
     """
-    Returns the current hashrate for Spectre network in TH/s.
+    Tracks the maximum hashrate observed incrementally by using the highest difficulty block since the
+    last recorded bluescore, effectively updating an "all-time high" whenever a new max is found.
     """
     maxhash_last_value = json.loads(
         (await KeyValueStore.get("maxhash_last_value")) or "{}"
@@ -86,7 +87,7 @@ async def get_max_hashrate():
 
     if hashrate_new > hashrate_old:
         response = {
-            "hashrate": hashrate_new / 1_000_000_000_000,
+            "hashrate": hashrate_new / 1e12,
             "blockheader": {
                 "hash": block.hash,
                 "timestamp": block.timestamp.isoformat(),

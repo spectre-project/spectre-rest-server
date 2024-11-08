@@ -29,7 +29,7 @@ class NetworkResponse(BaseModel):
 @app.get("/info/network", response_model=NetworkResponse, tags=["Spectre network info"])
 async def get_network():
     """
-    Get some global spectre network information
+    Get some global Spectre Network information.
     """
     resp = await spectred_client.request("getBlockDagInfoRequest")
     return resp["getBlockDagInfoResponse"]

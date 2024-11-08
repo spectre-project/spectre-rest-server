@@ -14,7 +14,7 @@ from server import app, spectred_client
 
 class SpectredResponse(BaseModel):
     spectredHost: str = ""
-    serverVersion: str = "0.12.6"
+    serverVersion: str = "0.3.14"
     isUtxoIndexed: bool = True
     isSynced: bool = True
     p2pId: str = "1231312"
@@ -27,7 +27,8 @@ class HealthResponse(BaseModel):
 @app.get("/info/health", response_model=HealthResponse, tags=["Spectre network info"])
 async def health_state():
     """
-    Returns the current hashrate for Spectre network in TH/s.
+    Checks health by verifying transaction recency and node sync status.
+    Returns each node's status and version.
     """
     await spectred_client.initialize_all()
 

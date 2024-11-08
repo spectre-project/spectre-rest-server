@@ -7,8 +7,8 @@ from fastapi.responses import PlainTextResponse
 
 
 class CoinSupplyResponse(BaseModel):
-    circulatingSupply: str = "1000900697580640180"
-    maxSupply: str = "2900000000000000000"
+    circulatingSupply: str = "19295068591369439"
+    maxSupply: str = "116100000000000000"
 
 
 @app.get(
@@ -36,9 +36,9 @@ async def get_circulating_coins(in_billion: bool = False):
     Get circulating amount of $SPR coin as numerical value
     """
     resp = await spectred_client.request("getCoinSupplyRequest")
-    coins = str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 100000000)
+    coins = str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 1e9)
     if in_billion:
-        return str(round(float(coins) / 1000000000, 2))
+        return str(round(float(coins) / 1e9, 2))
     else:
         return coins
 

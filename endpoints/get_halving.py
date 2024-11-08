@@ -20,7 +20,7 @@ class HalvingResponse(BaseModel):
 )
 async def get_halving(field: str | None = None):
     """
-    Returns information about bi-annual halving with monthly reduction
+    Returns information about bi-annual halving with monthly reduction.
     """
     resp = await spectred_client.request("getBlockDagInfoRequest")
     daa_score = int(resp["getBlockDagInfoResponse"]["virtualDaaScore"])

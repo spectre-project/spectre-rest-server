@@ -8,7 +8,7 @@ from server import app
 
 
 class PriceResponse(BaseModel):
-    price: float = 0.025235
+    price: float = 0.0314
 
 
 @app.get(
@@ -16,7 +16,7 @@ class PriceResponse(BaseModel):
 )
 async def get_price(stringOnly: bool = False):
     """
-    Returns the current price for Spectre in USD.
+    Returns the current price for Spectre in USD. Price info is from coingecko.com
     """
     if stringOnly:
         return PlainTextResponse(content=str(await get_spr_price()))

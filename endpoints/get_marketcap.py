@@ -22,13 +22,13 @@ async def get_marketcap(stringOnly: bool = False):
     spr_price = await get_spr_price()
     resp = await spectred_client.request("getCoinSupplyRequest")
     mcap = round(
-        float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 100000000 * spr_price
+        float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 1e8 * spr_price
     )
 
     if not stringOnly:
         return {"marketcap": mcap}
     else:
-        if mcap < 1000000000:
-            return f"{round(mcap / 1000000, 1)}M"
+        if mcap < 1e9:
+            return f"{round(mcap / 1e6, 1)}M"
         else:
-            return f"{round(mcap / 1000000000, 1)}B"
+            return f"{round(mcap / 1e9, 1)}B"
