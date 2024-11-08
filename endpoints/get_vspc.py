@@ -36,13 +36,13 @@ async def get_virtual_selected_parent_chain_from_block(
     some startHash to this spectred's current virtual.
     """
     resp = await spectred_client.request(
-        "getVirtualSelectedParentChainFromBlockRequest",
+        "getVirtualChainFromBlockRequest",
         params={
             "startHash": startHash,
             "includeAcceptedTransactionIds": includeAcceptedTransactionIds,
         },
     )
-    resp = resp["getVirtualSelectedParentChainFromBlockResponse"]
+    resp = resp["getVirtualChainFromBlockResponse"]
 
     if resp.get("error"):
         raise HTTPException(400, detail=resp.get("error").get("message"))
