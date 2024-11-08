@@ -85,7 +85,7 @@ class BlockResponse(BaseModel):
 async def get_block(response: Response, blockId: str = Path(regex="[a-f0-9]{64}")):
     """
     Retrieves detailed block data for a specified block hash (blockId) from the Spectre blockDAG.
-    Fetches the block details from the Spectred node or, if unavailable, from the local database as a fallback.
+    Attempts to fetch the block details from the Spectred node. If unavailable, fetches from the database as a fallback.
     """
     resp = await spectred_client.request(
         "getBlockRequest", params={"hash": blockId, "includeTransactions": True}
@@ -141,11 +141,11 @@ async def get_blocks(
     includeTransactions: bool = False,
 ):
     """
-    Lists block beginning from a low hash (block id). Note that this function tries to determine the blocks from
-    the Spectred node. If this is not possible, the database is getting queryied as backup. In this case the response
-    header contains the key value pair: x-data-source: database.
+    Lists blocks starting from a specified low hash (block ID). Attempts to retrieve the blocks from
+    the Spectred node. If unsuccessful, queries the database as a backup, with a response header
+    "x-data-source: database" indicating the data source.
 
-    Additionally the fields in verboseData: isChainBlock, childrenHashes and transactionIds can't be filled.
+    Note: Fields in verboseData (isChainBlock, childrenHashes, transactionIds) may not be populated in this response.
     """
     response.headers["Cache-Control"] = "public, max-age=3"
 
@@ -168,7 +168,7 @@ async def get_blocks_from_bluescore(
     response: Response, blueScore: int = 43679173, includeTransactions: bool = False
 ):
     """
-    Lists blocks beginning from a specified blue score within the Spectre blockDAG.
+    Lists blocks beginning from a specified bluescore within the Spectre blockDAG.
     """
     response.headers["X-Data-Source"] = "Database"
 
@@ -227,7 +227,7 @@ async def get_blocks_from_db_by_bluescore(blue_score):
 
 async def get_block_from_db(blockId):
     """
-    Get the block from the database
+    Retrieves a block from the database based on a given block ID.
     """
     async with async_session() as s:
         requested_block = await s.execute(
@@ -275,12 +275,10 @@ async def get_block_from_db(blockId):
     return None
 
 
-"""
-Get the transactions associated with a block
-"""
-
-
 async def get_block_transactions(blockId):
+    """
+    Retrieves transactions associated with a specified block.
+    """
     # create tx data
     tx_list = []
 
