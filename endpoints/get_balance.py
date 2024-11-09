@@ -31,7 +31,7 @@ async def get_balance_from_spectre_address(
     ),
 ):
     """
-    Get balance for a given spectre address
+    Get the balance for a specified Spectre address.
     """
     resp = await spectred_client.request(
         "getBalanceByAddressRequest", params={"address": spectreAddress}

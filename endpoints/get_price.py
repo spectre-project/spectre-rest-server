@@ -27,6 +27,6 @@ async def get_price(stringOnly: bool = False):
 @app.get("/info/market-data", tags=["Spectre network info"], include_in_schema=False)
 async def get_market_data():
     """
-    Returns market data for spectre.
+    Returns market data for Spectre.
     """
     return await get_spr_market_data()

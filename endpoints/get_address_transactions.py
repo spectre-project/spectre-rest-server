@@ -59,7 +59,7 @@ async def get_transactions_for_address(
     ),
 ):
     """
-    Get all transactions for a given address from database
+    Get a list of transaction IDs related to the specified Spectre address.
     """
     # SELECT transactions_outputs.transaction_id, transactions_inputs.transaction_id as inp_transaction FROM transactions_outputs
     #
@@ -118,8 +118,9 @@ async def get_full_transactions_for_address(
     ),
 ):
     """
-    Get all transactions for a given address from database.
-    And then get their related full transaction data
+    Get detailed transaction data for a Spectre address, with
+    options to limit the number of results and include details of
+    previous transactions.
     """
 
     async with async_session() as s:
@@ -155,7 +156,7 @@ async def get_transaction_count_for_address(
     ),
 ):
     """
-    Count the number of transactions associated with this address
+    Get total number of transactions associated with the specified Spectre address.
     """
 
     async with async_session() as s:

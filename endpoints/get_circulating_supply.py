@@ -16,7 +16,7 @@ class CoinSupplyResponse(BaseModel):
 )
 async def get_coinsupply():
     """
-    Get $SPR coin supply information
+    Get $SPR coin supply information.
     """
     resp = await spectred_client.request("getCoinSupplyRequest")
     return {
@@ -33,7 +33,7 @@ async def get_coinsupply():
 )
 async def get_circulating_coins(in_billion: bool = False):
     """
-    Get circulating amount of $SPR coin as numerical value
+    Get circulating amount of $SPR coin as numerical value.
     """
     resp = await spectred_client.request("getCoinSupplyRequest")
     coins = str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 1e9)
@@ -50,10 +50,10 @@ async def get_circulating_coins(in_billion: bool = False):
 )
 async def get_total_coins():
     """
-    Get total amount of $SPR coin as numerical value
+    Get total amount of $SPR coin as numerical value.
     """
     resp = await spectred_client.request("getCoinSupplyRequest")
-    return str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 100000000)
+    return str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 1e8)
 
 
 @app.get(
@@ -63,7 +63,7 @@ async def get_total_coins():
 )
 async def get_max_coins():
     """
-    Get maximum amount of $SPR coin as numerical value
+    Get maximum amount of $SPR coin as numerical value.
     """
     resp = await spectred_client.request("getCoinSupplyRequest")
-    return str(float(resp["getCoinSupplyResponse"]["maxSompi"]) / 100000000)
+    return str(float(resp["getCoinSupplyResponse"]["maxSompi"]) / 1e8)

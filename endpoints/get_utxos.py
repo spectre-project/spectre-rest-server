@@ -54,7 +54,7 @@ async def get_utxos_for_address(
     ),
 ):
     """
-    Lists all open utxo for a given spectre address
+    List all unspent transaction outputs (UTXOs) for the specified Spectre address.
     """
     resp = await spectred_client.request(
         "getUtxosByAddressesRequest",
