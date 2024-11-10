@@ -50,7 +50,7 @@ async def get_utxos_for_address(
         description="Spectre address as string e.g. "
         + SPECTRE_ADDRESS_PREFIX
         + ":qqkqkzjvr7zwxxmjxjkmxxdwju9kjs6e9u82uh59z07vgaks6gg62v8707g73",
-        regex = r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
+        regex=r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
     ),
 ):
     """

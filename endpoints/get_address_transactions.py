@@ -55,7 +55,7 @@ async def get_transactions_for_address(
         description="Spectre address as string e.g. "
         + SPECTRE_ADDRESS_PREFIX
         + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex = r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
+        regex=r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
     ),
 ):
     """
@@ -104,7 +104,7 @@ async def get_full_transactions_for_address(
         description="Spectre address as string e.g. "
         + SPECTRE_ADDRESS_PREFIX
         + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex = r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
+        regex=r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
     ),
     limit: int = Query(
         description="The number of records to get", ge=1, le=500, default=50
@@ -152,7 +152,7 @@ async def get_transaction_count_for_address(
         description="Spectre address as string e.g. "
         + SPECTRE_ADDRESS_PREFIX
         + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex = r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
+        regex=r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
     ),
 ):
     """
