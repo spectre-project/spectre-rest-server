@@ -27,7 +27,7 @@ async def get_balance_from_spectre_address(
         description="Spectre address as string e.g. "
         + SPECTRE_ADDRESS_PREFIX
         + ":pzhh76qc82wzduvsrd9xh4zde9qhp0xc8rl7qu2mvl2e42uvdqt75zrcgpm00",
-        regex="^" + SPECTRE_ADDRESS_PREFIX + "\:[a-z0-9]{61,63}$",
+        regex = r"^" + SPECTRE_ADDRESS_PREFIX + r"\:[a-z0-9]{61,63}$",
     ),
 ):
     """
