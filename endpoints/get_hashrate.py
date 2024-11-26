@@ -30,7 +30,11 @@ class MaxHashrateResponse(BaseModel):
     blockheader: BlockHeader
 
 
-@app.get("/info/hashrate", response_model=HashrateResponse | str, tags=["Spectre network info"])
+@app.get(
+    "/info/hashrate",
+    response_model=HashrateResponse | str,
+    tags=["Spectre network info"],
+)
 async def get_hashrate(stringOnly: bool = False):
     """
     Returns the current hashrate for Spectre network in TH/s.
@@ -38,31 +42,43 @@ async def get_hashrate(stringOnly: bool = False):
 
     resp = await spectred_client.request("getBlockDagInfoRequest")
     hashrate = resp["getBlockDagInfoResponse"]["difficulty"] * 2
-    hashrate_in_th = hashrate / 1_000_000_000_000
+    hashrate_in_th = hashrate / 1e12
 
     if not stringOnly:
-        return {
-            "hashrate": hashrate_in_th
-        }
+        return {"hashrate": hashrate_in_th}
 
     else:
         return f"{hashrate_in_th:.01f}"
 
 
-@app.get("/info/hashrate/max", response_model=MaxHashrateResponse, tags=["Spectre network info"])
+@app.get(
+    "/info/hashrate/max",
+    response_model=MaxHashrateResponse,
+    tags=["Spectre network info"],
+)
 @sql_db_only
 async def get_max_hashrate():
     """
-    Returns the current hashrate for Spectre network in TH/s.
+    Tracks the maximum hashrate observed incrementally by using the highest difficulty block since the
+    last recorded bluescore, effectively updating an "all-time high" whenever a new max is found.
     """
-    maxhash_last_value = json.loads((await KeyValueStore.get("maxhash_last_value")) or "{}")
-    maxhash_last_bluescore = int((await KeyValueStore.get("maxhash_last_bluescore")) or 0)
+    maxhash_last_value = json.loads(
+        (await KeyValueStore.get("maxhash_last_value")) or "{}"
+    )
+    maxhash_last_bluescore = int(
+        (await KeyValueStore.get("maxhash_last_bluescore")) or 0
+    )
     print(f"Start at {maxhash_last_bluescore}")
 
     async with async_session() as s:
-        block = (await s.execute(select(Block)
-                                 .filter(Block.blue_score > maxhash_last_bluescore)
-                                 .order_by(Block.difficulty.desc()).limit(1))).scalar()
+        block = (
+            await s.execute(
+                select(Block)
+                .filter(Block.blue_score > maxhash_last_bluescore)
+                .order_by(Block.difficulty.desc())
+                .limit(1)
+            )
+        ).scalar()
 
     hashrate_new = block.difficulty * 2
     hashrate_old = maxhash_last_value.get("blockheader", {}).get("difficulty", 0) * 2
@@ -70,16 +86,16 @@ async def get_max_hashrate():
     await KeyValueStore.set("maxhash_last_bluescore", str(block.blue_score))
 
     if hashrate_new > hashrate_old:
-        response = {"hashrate":  hashrate_new / 1_000_000_000_000,
-                    "blockheader":
-                        {
-                            "hash": block.hash,
-                            "timestamp": block.timestamp.isoformat(),
-                            "difficulty": block.difficulty,
-                            "daaScore": block.daa_score,
-                            "blueScore": block.blue_score
-                        }
-                    }
+        response = {
+            "hashrate": hashrate_new / 1e12,
+            "blockheader": {
+                "hash": block.hash,
+                "timestamp": block.timestamp.isoformat(),
+                "difficulty": block.difficulty,
+                "daaScore": block.daa_score,
+                "blueScore": block.blue_score,
+            },
+        }
         await KeyValueStore.set("maxhash_last_value", json.dumps(response))
         return response
 

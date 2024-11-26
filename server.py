@@ -1,9 +1,10 @@
 # encoding: utf-8
 import logging
 import os
+from typing import Optional
 
 import fastapi.logger
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi_utils.tasks import repeat_every
@@ -11,21 +12,19 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from dbsession import async_session
 from helper.LimitUploadSize import LimitUploadSize
 from spectred.SpectredMultiClient import SpectredMultiClient
 
 fastapi.logger.logger.setLevel(logging.WARNING)
+_logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Spectre REST-API server",
-    description="This server is to communicate with spectre network via REST-API",
+    description="This server is to communicate with Spectre Network via REST-API",
     version=os.getenv("VERSION", "tbd"),
-    contact={
-        "name": "lAmeR1"
-    },
-    license_info={
-        "name": "MIT LICENSE"
-    }
+    contact={"name": "Spectre Network"},
+    license_info={"name": "MIT LICENSE"},
 )
 
 app.add_middleware(GZipMiddleware, minimum_size=500)
@@ -42,30 +41,53 @@ app.add_middleware(
 )
 
 
+class SpectredStatus(BaseModel):
+    is_online: bool = False
+    server_version: Optional[str] = None
+    is_utxo_indexed: Optional[bool] = None
+    is_synced: Optional[bool] = None
+
+
+class DatabaseStatus(BaseModel):
+    is_online: bool = False
+
+
 class PingResponse(BaseModel):
-    serverVersion: str = "0.12.2"
-    isUtxoIndexed: bool = True
-    isSynced: bool = True
+    spectred: SpectredStatus = SpectredStatus()
+    database: DatabaseStatus = DatabaseStatus()
 
 
-@app.get("/ping",
-         include_in_schema=False,
-         response_model=PingResponse)
+@app.get("/ping", include_in_schema=False, response_model=PingResponse)
 async def ping_server():
     """
     Ping Pong
     """
+    result = PingResponse()
+
+    error = False
     try:
         info = await spectred_client.spectreds[0].request("getInfoRequest")
-        assert info["getInfoResponse"]["isSynced"] is True
+        result.spectred.is_online = True
+        result.spectred.server_version = info["getInfoResponse"]["serverVersion"]
+        result.spectred.is_utxo_indexed = info["getInfoResponse"]["isUtxoIndexed"]
+        result.spectred.is_synced = info["getInfoResponse"]["isSynced"]
+    except Exception as err:
+        _logger.error("Spectred health check failed %s", err)
+        error = True
 
-        return {
-            "server_version": info["getInfoResponse"]["serverVersion"],
-            "is_utxo_indexed": info["getInfoResponse"]["isUtxoIndexed"],
-            "is_synced": info["getInfoResponse"]["isSynced"]
-        }
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail="Spectred not connected.")
+    if os.getenv("SQL_URI") is not None:
+        async with async_session() as session:
+            try:
+                await session.execute("SELECT 1")
+                result.database.is_online = True
+            except Exception as err:
+                _logger.error("Database health check failed %s", err)
+                error = True
+
+    if error or not result.spectred.is_synced:
+        return JSONResponse(status_code=500, content=result.dict())
+
+    return result
 
 
 spectred_hosts = []
@@ -77,7 +99,7 @@ for i in range(100):
         break
 
 if not spectred_hosts:
-    raise Exception('Please set at least SPECTRED_HOST_1 environment variable.')
+    raise Exception("Please set at least SPECTRED_HOST_1 environment variable.")
 
 spectred_client = SpectredMultiClient(spectred_hosts)
 
@@ -87,9 +109,10 @@ async def unicorn_exception_handler(request: Request, exc: Exception):
     await spectred_client.initialize_all()
     return JSONResponse(
         status_code=500,
-        content={"message": "Internal server error"
-                 # "traceback": f"{traceback.format_exception(exc)}"
-                 },
+        content={
+            "message": "Internal server error"
+            # "traceback": f"{traceback.format_exception(exc)}"
+        },
     )
 
 

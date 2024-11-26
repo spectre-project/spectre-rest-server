@@ -2,6 +2,7 @@
 
 from typing import List
 
+from fastapi import Query
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
@@ -41,7 +42,11 @@ class SubmitTxModel(BaseModel):
 
 class SubmitTransactionRequest(BaseModel):
     transaction: SubmitTxModel
-    allowOrphan: bool = True
+    allowOrphan: bool = False
+
+
+class SubmitTransactionReplacementRequest(BaseModel):
+    transaction: SubmitTxModel
 
 
 class SubmitTransactionResponse(BaseModel):
@@ -49,35 +54,71 @@ class SubmitTransactionResponse(BaseModel):
     error: str | None
 
 
-@app.post("/transactions",
-          tags=["Spectre transactions"],
-          response_model_exclude_unset=True,
-          responses={200: {"model": SubmitTransactionResponse},
-                       400: {"model": SubmitTransactionResponse}})
-async def submit_a_new_transaction(body: SubmitTransactionRequest):
+@app.post(
+    "/transactions",
+    tags=["Spectre transactions"],
+    response_model_exclude_unset=True,
+    responses={
+        200: {"model": SubmitTransactionResponse},
+        400: {"model": SubmitTransactionResponse},
+    },
+)
+async def submit_a_new_transaction(
+    body: SubmitTransactionRequest,
+    replaceByFee: bool = Query(
+        description="Replace an existing transaction in the mempool", default=False
+    ),
+):
     """
-    Forwards the body directly to spectred with the command submitTransactionRequest
+    Submits a new transaction to the Spectre Network.
+
+    This endpoint accepts a transaction model containing version, inputs, outputs, lockTime, and optional subnetworkId fields.
+    It also supports an optional "replaceByFee" parameter, which, if enabled, replaces an existing transaction in the mempool based on fee priority.
+
+    Request Body:
+      - `transaction`: Specifies the transaction details, including:
+        - `inputs`: List of input details with previous outpoint references, signature scripts, sequence, and sigOpCount.
+        - `outputs`: List of outputs with amount and associated public key script.
+        - `lockTime`: (Optional) Specifies the transaction's lock time.
+        - `subnetworkId`: (Optional) Identifier for a subnetwork in the transaction.
+
+    Query Parameter:
+      - `replaceByFee`: If true, submits a "replace by fee" request, replacing an existing transaction in the mempool with the new one if it offers a higher fee.
+
+    Response:
+      - `On Success`: Returns transaction ID.
+      - `On Failure`: Returns error details in JSON response.
+
+    Note:
+    This endpoint forwards the request to the Spectre client, which processes the transaction with the specified parameters and handles replacements if `replaceByFee` is enabled.
     """
-    tx_resp = await spectred_client.request("submitTransactionRequest",
-                                          params=body.dict())
+    if replaceByFee:
+        # Replace by fee doesn't have the allowOrphan attribute
+        body = SubmitTransactionReplacementRequest(transaction=body.transaction)
+        tx_resp = await spectred_client.request(
+            "submitTransactionReplacementRequest", params=body.dict()
+        )
+        tx_resp = tx_resp["submitTransactionReplacementResponse"]
+    else:
+        tx_resp = await spectred_client.request(
+            "submitTransactionRequest", params=body.dict()
+        )
+        tx_resp = tx_resp["submitTransactionResponse"]
 
     tx_resp = tx_resp["submitTransactionResponse"]
 
-    # if error in response
     if "error" in tx_resp:
-        return JSONResponse(status_code=400,
-                            content={"error": tx_resp["error"].get("message", "")})
+        return JSONResponse(
+            status_code=400, content={"error": tx_resp["error"].get("message", "")}
+        )
 
     # if transactionId is in response
     elif "transactionId" in tx_resp:
-        return {
-            "transactionId": tx_resp["transactionId"]
-        }
+        return {"transactionId": tx_resp["transactionId"]}
 
     # something else went wrong
     else:
-        return JSONResponse(status_code=400,
-                            content={"error": str(tx_resp)})
+        return JSONResponse(status_code=400, content={"error": str(tx_resp)})
 
 
 """

@@ -7,13 +7,17 @@ from server import app, spectred_client
 
 
 class BlockRewardResponse(BaseModel):
-    blockreward: float = 12000132
+    blockreward: float = 15
 
 
-@app.get("/info/blockreward", response_model=BlockRewardResponse | str, tags=["Spectre network info"])
+@app.get(
+    "/info/blockreward",
+    response_model=BlockRewardResponse | str,
+    tags=["Spectre network info"],
+)
 async def get_blockreward(stringOnly: bool = False):
     """
-    Returns the current blockreward in SPR/block
+    Returns the current blockreward in SPR/block.
     """
     resp = await spectred_client.request("getBlockDagInfoRequest")
     daa_score = int(resp["getBlockDagInfoResponse"]["virtualDaaScore"])
@@ -26,11 +30,7 @@ async def get_blockreward(stringOnly: bool = False):
             break
 
     if not stringOnly:
-        return {
-            "blockreward": reward
-        }
+        return {"blockreward": reward}
 
     else:
         return f"{reward:.2f}"
-
-
