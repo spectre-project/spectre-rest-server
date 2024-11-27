@@ -16,9 +16,9 @@ MAXHASH_CACHE = (0, 0)
 class BlockHeader(BaseModel):
     hash: str = "e6641454e16cff4f232b899564eeaa6e480b66069d87bee6a2b2476e63fcd887"
     timestamp: str = "1656450648874"
-    difficulty: int = 1212312312
-    daaScore: str = "19984482"
-    blueScore: str = "18483232"
+    difficulty: float = 1212312312
+    daaScore: int = 19984482
+    blueScore: int = 18483232
 
 
 class HashrateResponse(BaseModel):

@@ -39,12 +39,12 @@ class TxInput(BaseModel):
     transaction_id: str
     index: int
     previous_outpoint_hash: str
-    previous_outpoint_index: str
+    previous_outpoint_index: int
     previous_outpoint_resolved: TxOutput | None
     previous_outpoint_address: str | None
     previous_outpoint_amount: int | None
     signature_script: str
-    sig_op_count: str
+    sig_op_count: int
 
     class Config:
         from_attributes = True
