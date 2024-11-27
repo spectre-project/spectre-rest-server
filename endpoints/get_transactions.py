@@ -31,7 +31,7 @@ class TxOutput(BaseModel):
     accepting_block_hash: str | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TxInput(BaseModel):
@@ -39,15 +39,15 @@ class TxInput(BaseModel):
     transaction_id: str
     index: int
     previous_outpoint_hash: str
-    previous_outpoint_index: str
+    previous_outpoint_index: int
     previous_outpoint_resolved: TxOutput | None
     previous_outpoint_address: str | None
     previous_outpoint_amount: int | None
     signature_script: str
-    sig_op_count: str
+    sig_op_count: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TxModel(BaseModel):
@@ -64,7 +64,7 @@ class TxModel(BaseModel):
     outputs: List[TxOutput] | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TxSearch(BaseModel):

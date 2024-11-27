@@ -25,7 +25,7 @@ class VerboseDataModel(BaseModel):
     transactionIds: List[str] | None = [
         "533f8314bf772259fe517f53507a79ebe61c8c6a11748d93a0835551233b3311"
     ]
-    blueScore: str = "18483232"
+    blueScore: int = 18483232
     childrenHashes: List[str] | None = None
     mergeSetBluesHashes: List[str] = []
     mergeSetRedsHashes: List[str] = []
@@ -49,13 +49,13 @@ class BlockHeader(BaseModel):
     utxoCommitment: str = (
         "236d5f9ffd19b317a97693322c3e2ae11a44b5df803d71f1ccf6c2393bc6143c"
     )
-    timestamp: str = "1656450648874"
+    timestamp: int = 1656450648874
     bits: int = 455233226
     nonce: str = "14797571275553019490"
-    daaScore: str = "19984482"
+    daaScore: int = 19984482
     blueWork: str = "2d1b3f04f8a0dcd31"
     parents: List[ParentHashModel]
-    blueScore: str = "18483232"
+    blueScore: int = 18483232
     pruningPoint: str = (
         "5d32a9403273a34b6551b84340a1459ddde2ae6ba59a47987a6374340ba41d5d"
     )
