@@ -31,7 +31,7 @@ class TxOutput(BaseModel):
     accepting_block_hash: str | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TxInput(BaseModel):
@@ -47,7 +47,7 @@ class TxInput(BaseModel):
     sig_op_count: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TxModel(BaseModel):
@@ -64,7 +64,7 @@ class TxModel(BaseModel):
     outputs: List[TxOutput] | None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TxSearch(BaseModel):
