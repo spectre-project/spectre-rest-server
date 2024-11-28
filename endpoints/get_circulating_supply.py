@@ -36,7 +36,7 @@ async def get_circulating_coins(in_billion: bool = False):
     Get circulating amount of $SPR coin as numerical value.
     """
     resp = await spectred_client.request("getCoinSupplyRequest")
-    coins = str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 1e9)
+    coins = str(float(resp["getCoinSupplyResponse"]["circulatingSompi"]) / 1e8)
     if in_billion:
         return str(round(float(coins) / 1e9, 2))
     else:
