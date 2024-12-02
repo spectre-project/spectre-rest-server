@@ -1,7 +1,6 @@
 from sqlalchemy import (
     Column,
     String,
-    Float,
     Boolean,
     Integer,
     BigInteger,
@@ -18,7 +17,6 @@ class Block(Base):
 
     hash = Column(String, primary_key=True)
     accepted_id_merkle_root = Column(String)
-    difficulty = Column(Float)
     # childrenHashes = Column(JSONB)
     is_chain_block = Column(Boolean)
     merge_set_blues_hashes = Column(ARRAY(String))

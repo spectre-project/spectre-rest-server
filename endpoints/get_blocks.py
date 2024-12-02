@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from dbsession import async_session
 from endpoints.get_virtual_chain_blue_score import current_blue_score_data
+from helper.difficulty_calculation import bits_to_difficulty
 from models.Block import Block
 from models.Transaction import Transaction, TransactionOutput, TransactionInput
 from server import app, spectred_client
@@ -194,7 +195,7 @@ async def get_blocks_from_bluescore(
             else None,
             "verboseData": {
                 "hash": block.hash,
-                "difficulty": block.difficulty,
+                "difficulty": bits_to_difficulty(block.bits),
                 "selectedParentHash": block.selected_parent_hash,
                 "transactionIds": [tx["verboseData"]["transactionId"] for tx in txs]
                 if includeTransactions
