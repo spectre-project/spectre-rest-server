@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from dbsession import async_session
 from endpoints.get_virtual_chain_blue_score import current_blue_score_data
+from helper.difficulty_calculation import bits_to_difficulty
 from models.Block import Block
 from models.Transaction import Transaction, TransactionOutput, TransactionInput
 from server import app, spectred_client
@@ -25,7 +26,7 @@ class VerboseDataModel(BaseModel):
     transactionIds: List[str] | None = [
         "533f8314bf772259fe517f53507a79ebe61c8c6a11748d93a0835551233b3311"
     ]
-    blueScore: int = 18483232
+    blueScore: str = "18483232"
     childrenHashes: List[str] | None = None
     mergeSetBluesHashes: List[str] = []
     mergeSetRedsHashes: List[str] = []
@@ -49,13 +50,13 @@ class BlockHeader(BaseModel):
     utxoCommitment: str = (
         "236d5f9ffd19b317a97693322c3e2ae11a44b5df803d71f1ccf6c2393bc6143c"
     )
-    timestamp: int = 1656450648874
+    timestamp: str = "1656450648874"
     bits: int = 455233226
     nonce: str = "14797571275553019490"
-    daaScore: int = 19984482
+    daaScore: str = "19984482"
     blueWork: str = "2d1b3f04f8a0dcd31"
     parents: List[ParentHashModel]
-    blueScore: int = 18483232
+    blueScore: str = "18483232"
     pruningPoint: str = (
         "5d32a9403273a34b6551b84340a1459ddde2ae6ba59a47987a6374340ba41d5d"
     )
@@ -194,7 +195,7 @@ async def get_blocks_from_bluescore(
             else None,
             "verboseData": {
                 "hash": block.hash,
-                "difficulty": block.difficulty,
+                "difficulty": bits_to_difficulty(block.bits),
                 "selectedParentHash": block.selected_parent_hash,
                 "transactionIds": [tx["verboseData"]["transactionId"] for tx in txs]
                 if includeTransactions
