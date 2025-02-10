@@ -186,7 +186,7 @@ async def get_blocks_from_bluescore(
                 "nonce": block.nonce,
                 "daaScore": block.daa_score,
                 "blueWork": block.blue_work,
-                "parents": [{"parentHashes": block.parents}],
+                "parents": [{"parentHashes": block.parents}] if block.parents else [],
                 "blueScore": block.blue_score,
                 "pruningPoint": block.pruning_point,
             },
@@ -252,7 +252,9 @@ async def get_block_from_db(blockId):
                 "nonce": requested_block.nonce,
                 "daaScore": requested_block.daa_score,
                 "blueWork": requested_block.blue_work,
-                "parents": [{"parentHashes": requested_block.parents}],
+                "parents": [{"parentHashes": requested_block.parents}]
+                if requested_block.parents
+                else [],
                 "blueScore": requested_block.blue_score,
                 "pruningPoint": requested_block.pruning_point,
             },
